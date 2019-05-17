@@ -117,7 +117,7 @@ for submission in subreddit.stream.submissions(pause_after=0):
                         print(type(e))
 
                 minutes = (datetime.utcnow() - datetime.fromtimestamp(postData.created_utc)).total_seconds() / 60
-                if popular + unpopular >= 0 and minutes > 0:
+                if popular + unpopular >= 20 and minutes > 180:
                     if popular >= unpopular:
                         postData.mod.flair("Popular Opinion")
                         postData.report(
