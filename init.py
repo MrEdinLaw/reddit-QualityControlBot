@@ -33,10 +33,10 @@ reddit = praw.Reddit(client_id=clientId,
                      username=username,
                      password=password)
 
-BODY_TEXT = "Is this a **Popular** or **Unpopular** opinion? Please reply to this comment."
+BODY_TEXT = "Is this a **Popular** or **Unpopular** opinion? Please reply to this comment with either *'popular'* or *'unpopular'*\n\n#**Please do not vote on your own submissions.**"
 syncedPosts = []
 syncedComments = []
-SUBREDDIT = "mredinlaw_bot_testing"
+SUBREDDIT = "unpopularopinion"
 
 # Get already fetched submissions and comments
 for result in sql_con.execute(
@@ -78,39 +78,46 @@ for submission in subreddit.stream.submissions(pause_after=0):
                 commentData.refresh()  # Refresh comments (For some reason this is required nowdays)
 
                 for reply in commentData.replies:  # Loop thru all replies
-                    if reply.id not in syncedComments and reply.author.id not in alreadyVoted and reply.author_flair_css_class is not "f":  # Check if reply is not synced yet, author didn't vote yet, and is not banned from voting with a hidden CSS class
-                        syncedComments.append(reply.id)  # Add to synced comments
-                        sql_temp.execute(  # Add comment to synced comments in database
-                            "INSERT INTO comments (comment_id) VALUES ('" + str(reply.id) + "')")
-                        if reply.author.id != postData.author.id:  # Check if the reply is not written by the author of the submission
-                            print("Start Reply Processing")
+                    try:
+                        if reply.id not in syncedComments and reply.author.id not in alreadyVoted and reply.author_flair_css_class is not "f":  # Check if reply is not synced yet, author didn't vote yet, and is not banned from voting with a hidden CSS class
+                            syncedComments.append(reply.id)  # Add to synced comments
+                            sql_temp.execute(  # Add comment to synced comments in database
+                                "INSERT INTO comments (comment_id) VALUES ('" + str(reply.id) + "')")
+                            if reply.author.id != postData.author.id:  # Check if the reply is not written by the author of the submission
+                                print("Start Reply Processing")
 
-                            voted = False
-                            if "unpopular" in reply.body.lower():
-                                print("UnPopular")
-                                unpopular += 1
-                                voted = True
-                            elif "popular" in reply.body.lower():
-                                popular += 1
-                                print("Popular")
-                                voted = True
+                                voted = False
+                                if "unpopular" in reply.body.lower():
+                                    print("UnPopular")
+                                    unpopular += 1
+                                    voted = True
+                                elif "popular" in reply.body.lower():
+                                    popular += 1
+                                    print("Popular")
+                                    voted = True
 
-                            if voted:
-                                sql_temp.execute(  # Add user to synced users for this submission
-                                    "INSERT INTO users (user_id, submission_id) VALUES (?,?)",
-                                    (reply.author.id,
-                                     dataId[0]))
+                                if voted:
+                                    sql_temp.execute(  # Add user to synced users for this submission
+                                        "INSERT INTO users (user_id, submission_id) VALUES (?,?)",
+                                        (reply.author.id,
+                                         dataId[0]))
 
-                                commentData.edit(
-                                    BODY_TEXT + "\n\n\nCurrent Votes: \n\n" + str(popular) + " Popular \n\n" + str(
-                                        unpopular) + " Unpopular")  # Edit the comment body to show the current popular/unpopular stats
-                        else:
-                            print("Commenting on own submission.")
-                            reply.mod.remove("You cannot vote on your own submission.")
-                            reply.author.message("Comment Removed", "Please don't vote on your own submissions.", from_subreddit=SUBREDDIT)
+                                    commentData.edit(
+                                        BODY_TEXT + f'\n\nCurrent Votes:\n\nPopular|Unpopular\n:--|:--\n{popular}|{unpopular}')
+                                            # Edit the comment body to show the current popular/unpopular stats
+                            else:
+                                syncedComments.append(reply.id)  # Add to synced comments
+                                sql_temp.execute(  # Add comment to synced comments in database
+                                    "INSERT INTO comments (comment_id) VALUES ('" + str(reply.id) + "')")
+                                print("Commenting on own submission.")
+                                reply.mod.remove("You cannot vote on your own submission.")
+                                reply.author.message("Comment Removed", "Please don't vote on your own submissions.\n\n#**This message is from a bot. Your reply will not be read.**")
+
+                    except Exception as e:
+                        print(type(e))
 
                 minutes = (datetime.utcnow() - datetime.fromtimestamp(postData.created_utc)).total_seconds() / 60
-                if postData.score > 20 and minutes > 180:
+                if popular + unpopular >= 0 and minutes > 0:
                     if popular >= unpopular:
                         postData.mod.flair("Popular Opinion")
                         postData.report(
