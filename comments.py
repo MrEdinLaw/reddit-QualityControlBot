@@ -12,7 +12,7 @@ from keys import keys
 from config import config
 
 # Database Connection and Table Creation
-sql_config = sqlite3.connect('data.db')
+sql_config = sqlite3.connect('comments.db')
 sql_con = sql_config.cursor()
 sql_temp = sql_config.cursor()
 sql_con.execute(
