@@ -1,6 +1,7 @@
 config = dict(
-    subreddit="mredinlaw_bot_testing",
-    comment_text="Is this a **Popular** or **Unpopular** opinion? Please reply to this comment with either *'popular'* or *'unpopular'*\n\n#**Please do not vote on your own submissions.**",
-    votes=20,
-    minutes=180
+    subreddit="mredinlaw_bot_testing",  # Subreddit
+    comment_text="Demo Text",  # Text the bot should comment
+    votes=20,  # Used for comments.py
+    score=-2,  # Used for votes.py
+    minutes=180  # Used in both
 )
