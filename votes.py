@@ -3,7 +3,6 @@
 
 # Importsa
 import praw
-from time import sleep
 from datetime import datetime
 import sqlite3
 
