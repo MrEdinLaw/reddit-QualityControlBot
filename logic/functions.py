@@ -41,11 +41,9 @@ def addNewBotComment(submission):
     return newBotComment
 
 
-def getRepliesToComment(submission_id, comment_id):
+def getNewRepliesToComment(submission_id, comment_id):
     result = []
-    for comment in reddit.getCommentsOfSubmission(submission_id):
-        print(f'Parent: {comment.parent_id[3:]} and needed {comment_id} | Text {comment.body}')
-        if comment.parent_id[3:] == comment_id and comment.banned_by is "None":
-            print(f'Reply to comment: {comment.body}')
-            result.append(comment)
+    for reply in reddit.getRepliesOfCommentId(submission_id, comment_id):
+        print(reply.body)
+
     return result

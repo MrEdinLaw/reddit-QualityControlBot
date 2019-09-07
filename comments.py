@@ -17,7 +17,7 @@ while True:
 
     # Scan for new replies to comments
     for submission in logic.trackingSubmissions:
-        for comment in logic.getRepliesToComment(submission[0], submission[1]):
+        for comment in logic.getNewRepliesToComment(submission[0], submission[1]):
             print(f'Comment Found {comment}')
 
 

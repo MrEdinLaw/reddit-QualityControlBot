@@ -17,9 +17,20 @@ def getSubmissions():
             reddit.subreddit(config['subreddit']).new(limit=1000)]
 
 
-def getCommentsOfSubmission(submission_id):
-    refresh()
-    return [result for result in reddit.submission(id=submission_id).comments]
+def getRepliesOfCommentId(submission_id, comment_id):
+    submission = reddit.submission(id=submission_id)
+    submission.comments.replace_more(limit=None)
+    comment_queue = submission.comments[:]  # Seed with top-level
+
+    botCommentReplies = False
+    scanId = 0
+    while botCommentReplies is False:
+        if comment_queue[scanId] == comment_id:
+            if len(comment_queue[scanId].replies) > 0:
+                botCommentReplies = comment_queue[scanId].replies
+        scanId += 1
+
+    return botCommentReplies
 
 
 def refresh():
