@@ -3,15 +3,9 @@ from config import config
 from logic import db
 
 # Get already fetched submissions and comments
-processedComments = db.getSyncedComments()
-trackingSubmissions = db.getSubmissionsWithBotCommentId()
+trackedSubmissions = db.getSubmissionsWithBotCommentId()
 botComments = db.getBotComments()
-fetchedSubmissionIds = db.getSubmissions()
-
-
-def addSyncedComment(comment_id):
-    processedComments.append(comment_id)
-    db.addSyncedComment(comment_id)
+submissionsWithBotComment = db.getSubmissions()
 
 
 def addBotComment(comment_id):
@@ -19,8 +13,8 @@ def addBotComment(comment_id):
     db.addBotComment(comment_id)
 
 
-def addUserToComment(user_id, comment_id):
-    db.addUserToComment(user_id, comment_id)
+def addUserToComment(user_id, submission_id):
+    db.addUserToComment(user_id, submission_id)
 
 
 def skipPost(post_id):
@@ -28,8 +22,8 @@ def skipPost(post_id):
 
 
 def addNewSubmission(submission_id, comment_id):
-    trackingSubmissions.append([submission_id, comment_id])
-    fetchedSubmissionIds.append(submission_id)
+    trackedSubmissions.append([submission_id, comment_id])
+    submissionsWithBotComment.append(submission_id)
     db.addNewSubmission(submission_id, comment_id)
 
 
@@ -43,7 +37,13 @@ def addNewBotComment(submission):
 
 def getNewRepliesToComment(submission_id, comment_id):
     result = []
-    for reply in reddit.getRepliesOfCommentId(submission_id, comment_id):
-        print(reply.body)
+    votedUserIds = db.getUsersWhoVotedOnSubmission(submission_id)
+    repliesOfComment = reddit.getRepliesOfCommentId(submission_id, comment_id)
+    if repliesOfComment is not False:
+        for reply in repliesOfComment:
+            if reply.author_fullname[3:] not in votedUserIds:
+                result.append(reply)
+                votedUserIds.append(reply.author_fullname[3:])
+                addUserToComment(reply.author_fullname[3:], submission_id)
 
     return result

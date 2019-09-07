@@ -21,14 +21,13 @@ def getRepliesOfCommentId(submission_id, comment_id):
     submission = reddit.submission(id=submission_id)
     submission.comments.replace_more(limit=None)
     comment_queue = submission.comments[:]  # Seed with top-level
-
     botCommentReplies = False
-    scanId = 0
-    while botCommentReplies is False:
-        if comment_queue[scanId] == comment_id:
-            if len(comment_queue[scanId].replies) > 0:
-                botCommentReplies = comment_queue[scanId].replies
-        scanId += 1
+
+    for top_comment in comment_queue:
+        if top_comment == comment_id:
+            if len(top_comment.replies) > 0:
+                botCommentReplies = top_comment.replies
+                break
 
     return botCommentReplies
 

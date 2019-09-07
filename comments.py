@@ -3,12 +3,13 @@
 
 # Imports
 import logic.functions as logic
+
 # New System
 while True:
     print("\n\t\tNEW RUN\n")
     # Scan for new posts
     for submission in logic.reddit.getSubmissions():
-        if submission.id not in logic.fetchedSubmissionIds:
+        if submission.id not in logic.submissionsWithBotComment:
             print("New Post Found")
             newBotComment = logic.addNewBotComment(submission)
             logic.addNewSubmission(submission.id, newBotComment.id)
@@ -16,11 +17,14 @@ while True:
             logic.db.commit()
 
     # Scan for new replies to comments
-    for submission in logic.trackingSubmissions:
+    for submission in logic.trackedSubmissions:
         for comment in logic.getNewRepliesToComment(submission[0], submission[1]):
-            print(f'Comment Found {comment}')
 
+            print(f'Comment Found {comment.body}')
+            print(comment.author_fullname[3:])
+            # comment.mod.remove(spam=False)
 
+    logic.db.commit()
 
 comment = data
 print("New Comment")
