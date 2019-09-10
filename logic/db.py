@@ -13,6 +13,9 @@ for tempResult in sql_con.execute("SELECT `option_name` FROM `options`"):
     tableText += f", {tempResult[0]} TEXT DEFAULT 0"
 
 print(f'Current options to check for: \n\t{options}')
+if input("Is this ok? (y/n)") == "n":
+    print("Not Done yet.\n\tPlease edit the database manually and reRun.")
+    #  TODO Add way to add opinions manually
 
 sql_con.execute(f"CREATE TABLE IF NOT EXISTS 'submissions' (id INTEGER PRIMARY KEY AUTOINCREMENT, submission_id TEXT, bot_comment_id TEXT {tableText}, skip INTEGER DEFAULT 0)")
 
