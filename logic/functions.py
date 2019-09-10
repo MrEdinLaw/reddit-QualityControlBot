@@ -54,3 +54,18 @@ def getTextOption(text):
         if option.lower() in text.lower():
             return option
     return False
+
+
+def updateBotComment(submissionId, botCommentId):
+    options = db.getDatabaseOptionCount(submissionId)[0]
+    voteString = ""
+    #  Options
+    for option in db.options:
+        voteString += f'{option.title()}|'
+    voteString = voteString[:-1] + "\n:--|:--\n"
+    #  Count/Results
+    for option in options:
+        voteString += f"{option}|"
+    voteString = voteString[:-1]
+
+    reddit.editComment(botCommentId, voteString)

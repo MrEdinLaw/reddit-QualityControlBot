@@ -23,3 +23,8 @@ def getRepliesOfCommentId(comment_id):
     comment = comment.refresh()
     replies = comment.replies
     return replies
+
+
+def editComment(commentId, newText):
+    comment = reddit.comment(id=commentId)
+    comment.edit(config['comment_text'] + f'\n\nCurrent Votes:\n\n{newText}')

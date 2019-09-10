@@ -8,9 +8,9 @@ sql_con.execute("CREATE TABLE IF NOT EXISTS 'options' (id INTEGER PRIMARY KEY AU
 
 options = []
 tableText = ""
-for result in sql_con.execute("SELECT `option_name` FROM `options`"):
-    options.append(result[0])
-    tableText += f", {result[0]} TEXT DEFAULT 0"
+for tempResult in sql_con.execute("SELECT `option_name` FROM `options`"):
+    options.append(tempResult[0])
+    tableText += f", {tempResult[0]} TEXT DEFAULT 0"
 
 print(f'Current options to check for: \n\t{options}')
 
@@ -63,6 +63,14 @@ def addVoteToSubmission(submissionId, option):
         f"UPDATE submissions SET {option} = {option} + 1 WHERE submission_id = '{submissionId}'")
     print(f"\tAdded vote {option} to {submissionId}")
 
+
+def getDatabaseOptionCount(submissionId):
+    optionString = ""
+    for option in options:
+        optionString += f",{option}"
+
+    return [result for result in sql_con.execute(
+        f"SELECT {optionString[1:]} FROM `submissions` WHERE submission_id IS '{submissionId}'")]
 
 def commit():
     sql_config.commit()

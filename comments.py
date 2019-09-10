@@ -25,6 +25,8 @@ while True:
             logic.db.addUserToComment(new_reply[0].author_fullname[3:], tracked_submission[0])  # The reply was processed, add it to the database
             logic.db.addVoteToSubmission(tracked_submission[0], new_reply[1])
 
+        # Update the table
+        logic.updateBotComment(tracked_submission[0], tracked_submission[1])
     logic.db.commit()
 
 comment = data
