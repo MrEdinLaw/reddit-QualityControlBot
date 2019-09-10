@@ -45,7 +45,4 @@ def getNewRepliesToComment(submission_id, comment_id):
 
 
 def textHasOption(text):
-    for option in db.options:
-        if option.lower() in text.lower():
-            return True
-    return False
+    return any(option.lower() in text.lower() for option in db.options)
