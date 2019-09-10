@@ -17,12 +17,12 @@ while True:
             logic.db.commit()
 
     # Scan for new replies to comments
-    for submission in logic.trackedSubmissions:
-        for comment in logic.getNewRepliesToComment(submission[0], submission[1]):
-
-            print(f'Comment Found {comment.body}')
-            print(comment.author_fullname[3:])
-            # comment.mod.remove(spam=False)
+    for tracked_submission in logic.trackedSubmissions:
+        for new_reply in logic.getNewRepliesToComment(tracked_submission[0], tracked_submission[1]):
+            if logic.textHasOption(new_reply.body):
+                print(f'Comment Found {new_reply.body}')
+                print(new_reply.author_fullname[3:])
+                logic.db.addUserToComment(new_reply.author_fullname[3:], tracked_submission[0])
 
     logic.db.commit()
 

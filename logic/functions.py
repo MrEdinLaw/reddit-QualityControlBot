@@ -13,10 +13,6 @@ def addBotComment(comment_id):
     db.addBotComment(comment_id)
 
 
-def addUserToComment(user_id, submission_id):
-    db.addUserToComment(user_id, submission_id)
-
-
 def skipPost(post_id):
     db.setPostToSkip(post_id)
 
@@ -44,6 +40,12 @@ def getNewRepliesToComment(submission_id, comment_id):
             if reply.author_fullname[3:] not in votedUserIds:
                 result.append(reply)
                 votedUserIds.append(reply.author_fullname[3:])
-                addUserToComment(reply.author_fullname[3:], submission_id)
 
     return result
+
+
+def textHasOption(text):
+    for option in db.options:
+        if option.lower() in text.lower():
+            return True
+    return False

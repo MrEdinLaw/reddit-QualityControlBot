@@ -12,7 +12,7 @@ for result in sql_con.execute("SELECT `option_name` FROM `options`"):
     options.append(result[0])
     tableText += f", {result[0]} TEXT DEFAULT 0"
 
-print(options)
+print(f'Current options to check for: \n\t{options}')
 
 sql_con.execute(
     f"CREATE TABLE IF NOT EXISTS 'submissions' (id INTEGER PRIMARY KEY AUTOINCREMENT, submission_id TEXT, bot_comment_id TEXT {tableText}, skip INTEGER DEFAULT 0)")
