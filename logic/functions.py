@@ -38,7 +38,7 @@ def addNewBotComment(submission):
 def getNewRepliesToComment(submission_id, comment_id):
     result = []
     votedUserIds = db.getUsersWhoVotedOnSubmission(submission_id)
-    repliesOfComment = reddit.getRepliesOfCommentId(submission_id, comment_id)
+    repliesOfComment = reddit.getRepliesOfCommentId(comment_id)
     if repliesOfComment is not False:
         for reply in repliesOfComment:
             if reply.author_fullname[3:] not in votedUserIds:
