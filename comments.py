@@ -1,6 +1,9 @@
 # Copyright (C) 2020 Edin Demic @MrEdinLaw - All Rights Reserved
 # You may use, and modify this code but not distribute
 
+# TODO
+# When no new comments for # of scans start skipping post
+
 # Imports
 import logic.functions as logic
 
@@ -17,12 +20,10 @@ while True:
             logic.db.commit()
 
     # Scan for new replies to comments
-    for tracked_submission in logic.trackedSubmissions:
-        for new_reply in logic.getNewRepliesToComment(tracked_submission[0], tracked_submission[1]):
-            if logic.textHasOption(new_reply.body):
-                print(f'Comment Found {new_reply.body}')
-                print(new_reply.author_fullname[3:])
-                logic.db.addUserToComment(new_reply.author_fullname[3:], tracked_submission[0])
+    for tracked_submission in logic.trackedSubmissions:  # Loop thru all submission that we track
+        for new_reply in logic.getNewRepliesToComment(tracked_submission[0], tracked_submission[1]):  # Loop thru new replies of users
+            logic.db.addUserToComment(new_reply[0].author_fullname[3:], tracked_submission[0])  # The reply was processed, add it to the database
+            logic.db.addVoteToSubmission(tracked_submission[0], new_reply[1])
 
     logic.db.commit()
 

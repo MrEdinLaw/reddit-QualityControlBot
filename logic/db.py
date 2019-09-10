@@ -14,8 +14,7 @@ for result in sql_con.execute("SELECT `option_name` FROM `options`"):
 
 print(f'Current options to check for: \n\t{options}')
 
-sql_con.execute(
-    f"CREATE TABLE IF NOT EXISTS 'submissions' (id INTEGER PRIMARY KEY AUTOINCREMENT, submission_id TEXT, bot_comment_id TEXT {tableText}, skip INTEGER DEFAULT 0)")
+sql_con.execute(f"CREATE TABLE IF NOT EXISTS 'submissions' (id INTEGER PRIMARY KEY AUTOINCREMENT, submission_id TEXT, bot_comment_id TEXT {tableText}, skip INTEGER DEFAULT 0)")
 
 sql_con.execute(
     "CREATE TABLE IF NOT EXISTS 'users' (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT, submission_id TEXT)")
@@ -57,6 +56,12 @@ def getSubmissions():
 def getUsersWhoVotedOnSubmission(submission_id):
     return [result[0] for result in sql_con.execute(
         f"SELECT user_id FROM `users` WHERE submission_id IS '{submission_id}'")]
+
+
+def addVoteToSubmission(submissionId, option):
+    sql_con.execute(
+        f"UPDATE submissions SET {option} = {option} + 1 WHERE submission_id = '{submissionId}'")
+    print(f"\tAdded vote {option} to {submissionId}")
 
 
 def commit():
